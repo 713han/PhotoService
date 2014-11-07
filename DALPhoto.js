@@ -45,7 +45,7 @@ var DALPhoto = (function(o){
 	}
 	
 	o.PhotoData = function(){
-		var obj = {};			
+		var obj = {};
 		
 		obj._id = 0;
 		obj.path = '';
@@ -68,11 +68,11 @@ var DALPhoto = (function(o){
 		var status = new o.statusObj();
 		
 		var uuidBinary = new Buffer(uuid.v1({}, []));
-        var id = mongodb.BSONPure.Binary(uuidBinary, mongodb.BSONPure.Binary.SUBTYPE_UUID);
+		var id = mongodb.BSONPure.Binary(uuidBinary, mongodb.BSONPure.Binary.SUBTYPE_UUID);
 		
 		var ts = new Date().getTime();
-        var i = ts % 1000;
-        var t = new mongodb.BSONPure.Timestamp(i, Math.floor(ts * 0.001));
+		var i = ts % 1000;
+		var t = new mongodb.BSONPure.Timestamp(i, Math.floor(ts * 0.001));
 		
 		insertObj._id = id;
 		insertObj.createDate = t;
