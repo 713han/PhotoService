@@ -1,0 +1,17 @@
+<!DOCTYPE html> 
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Nodejs - 檔案上傳</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="author" content="Hans Huang" />    
+</head>
+<body>
+	<form method='post' action='/photo/fileupload' enctype="multipart/form-data">
+    filePath:<input type='text' name='filePath' /><br />
+	fileName:<input type='text' name='fileName' /><br />
+	<input type='file' name='fileUploaded' /><br />
+    <input type='submit' value='檔案上傳'/>
+	</form>
+</body>
+</html>

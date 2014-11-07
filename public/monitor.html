@@ -1,0 +1,64 @@
+<!DOCTYPE html> 
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Nodejs - 伺服器狀態</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="author" content="Hans Huang" />    
+</head>
+<body>
+    <div>
+        <b>Thread Status</b>
+		<input type="button" id="startbutton" value="start" />
+		<input type="button" id="stopbutton" value="stop" />
+        <div id="thread"></div>        
+    </div>
+    <div>
+		<b>System Notify</b>
+		<input type="button" id="clearbutton" value="clear" />
+        <div id="SystemNotify"></div>
+    </div>
+</body>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="http://192.168.56.103:8081/socket.io/socket.io.js" type="text/javascript"></script>
+<script>
+	var socket = io.connect('http://192.168.56.103:8081');
+	
+	socket.on('updateStatus', function (data) {
+		$('#thread').empty();
+		//console.log(data);
+		for(var pid in data){	
+			$('#thread').append('<div>Thread Pid:' + pid + ' Reqs:' + data[pid].numReqs + ' CacheSize:' + data[pid].cacheSize + '</div>');			
+		}			
+	});
+
+	socket.on('threadStart', function (data) {
+		$('#SystemNotify').append('<div>Thread Pid:' + data + ' Start</div>');
+	});	
+	
+	socket.on('threadDied', function (data) {
+		$('#SystemNotify').append('<div>Thread Pid:' + data + ' Died</div>');
+	});	
+
+	$(function(){
+		$('#startbutton').attr("disabled", false);
+		$('#stopbutton').attr("disabled", true);
+		
+		$('#startbutton').click( function() {
+			$('#startbutton').attr("disabled", true);
+			$('#stopbutton').attr("disabled", false);
+			socket.emit('start');
+		});
+		
+		$('#stopbutton').click( function() {
+			$('#startbutton').attr("disabled", false);
+			$('#stopbutton').attr("disabled", true);
+			socket.emit('stop');
+		});
+		
+		$('#clearbutton').click( function() {
+			$('#SystemNotify').empty();
+		});
+	});
+</script>
+</html>

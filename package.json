@@ -1,0 +1,28 @@
+{
+  "name": "PhotoService",
+  "version": "0.0.1",
+  "description": "photo service",
+  "main": "server.js",
+  "dependencies": {
+    "connect-busboy": "0.0.1",
+    "express": "~4.10.1",
+    "gm": "1.16.0",
+    "lru-cache": "2.5.0",
+    "mmmagic": "0.3.8",
+    "serve-favicon": "2.1.4",
+    "socket.io": "1.1.0",
+    "node-uuid": "~1.4.1",
+    "mongodb": "~1.4.19"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:713han/PhotoService.git"
+  },
+  "author": "HansHuang",
+  "license": "MIT"
+}
