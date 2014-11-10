@@ -1,5 +1,3 @@
-//TODO update
-
 var DALPhoto = (function(o){
 	"use strict";
 	
@@ -124,7 +122,7 @@ var DALPhoto = (function(o){
 		});
 	}
 	
-	//SAVE ID一樣等同update的賦改文件，沒有ID則新增
+	//SAVE:_id一樣等同update的賦改文件，沒有ID則新增
 	//參考:http://mongodb.github.io/node-mongodb-native/markdown-docs/insert.html
 	o.savePhotoData = function(strID, callback){
 		var status = new o.statusObj();
