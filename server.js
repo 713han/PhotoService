@@ -147,10 +147,6 @@ app.get('/photo/get/:strID', function(req, res){
 	picsController.getPhoto(req, res);
 });
 
-app.get('/photo/save/:strID', function(req, res){
-	picsController.savePhoto(req, res);
-});
-
 app.get('/photo/update/:strID', function(req, res){
 	picsController.updatePhoto(req, res);
 });
@@ -185,6 +181,10 @@ app.get('/photo/file/', function (req, res) {
 	
 //--Debug--
 /* no use
+app.get('/photo/save/:strID', function(req, res){
+	picsController.savePhoto(req, res);
+});
+
 app.get('/mallimg/file/', function (req, res) {
 	res.sendFile('file.html', { root: path.join(__dirname, './public') });
 });
