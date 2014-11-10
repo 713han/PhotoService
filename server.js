@@ -143,6 +143,22 @@ app.post('/photo/fileupload', function(req, res){
 	picsController.imgUpload(req, res);
 });
 
+app.get('/photo/get/:strID', function(req, res){
+	picsController.getPhoto(req, res);
+});
+
+app.get('/photo/save/:strID', function(req, res){
+	picsController.savePhoto(req, res);
+});
+
+app.get('/photo/update/:strID', function(req, res){
+	picsController.updatePhoto(req, res);
+});
+
+app.get('/photo/remove/:strID', function(req, res){
+	picsController.removePhoto(req, res);
+});
+
 app.get('/photo/photoList', function(req, res){
 	picsController.getPhotoList(req, res);
 });

@@ -45,6 +45,34 @@ var photoController = (function(o){
 		bindEvent();		
 	}
 	
+	o.getPhoto = function(req, res){	
+		var key = req.params.strID;
+		dalPhoto.getPhotoData(key, function(statusObj){
+			objResponse(res, statusObj);
+		});		
+	}
+	
+	o.savePhoto = function(req, res){	
+		var key = req.params.strID;
+		dalPhoto.savePhotoData(key, function(statusObj){
+			objResponse(res, statusObj);
+		});		
+	}
+	
+	o.updatePhoto = function(req, res){	
+		var key = req.params.strID;
+		dalPhoto.updatePhotoData(key, function(statusObj){
+			objResponse(res, statusObj);
+		});		
+	}
+	
+	o.removePhoto = function(req, res){	
+		var key = req.params.strID;
+		dalPhoto.removePhotoData(key, function(statusObj){
+			objResponse(res, statusObj);
+		});		
+	}
+	
 	o.getPhotoList = function(req, res){		
 		dalPhoto.getPhotoDataList(function(statusObj){
 			objResponse(res, statusObj);
@@ -119,7 +147,8 @@ var photoController = (function(o){
 			
 			var fromPath = imgHome + 'temp/',
 				toPath = 'temp/Upload/',
-				fileName = uuid.v1();
+				strID = uuid.v1(),
+				fileName = strID;
 			
 			if(ipLimit[ip]){			
 				if(req.headers['content-length'] <= uploadSize){
@@ -158,7 +187,7 @@ var photoController = (function(o){
 									fs.mkdirParent(imgHome + toPath ,'0755', function(){
 										fs.rename(fromPath + fileName, imgHome + toPath + fileName, error(res,function (result) {
 											var PhotoData = dalPhoto.PhotoData();
-											PhotoData.set(toPath, fileName, hostname + toPath + fileName, function(insertObj){
+											PhotoData.set(strID, toPath, fileName, hostname + toPath + fileName, function(insertObj){
 												dalPhoto.insertPhotoData(insertObj, function(statusObj){
 													objResponse(res, statusObj);
 												});
