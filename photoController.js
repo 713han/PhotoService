@@ -22,7 +22,8 @@ var photoController = (function(o){
 		cache = lruCache(config.lruOptions),
 		//otherCache = lruCache(50); // sets just the max size;
 		
-		dalPhoto = require('./DALPhoto');
+		//dalPhoto = require('./DALMongodbPhoto');
+		dalPhoto = require('./DALMysqlPhoto');
 		dalPhoto.init();
 	
 	fs.mkdirParent = function(dirPath, mode, callback) {	
