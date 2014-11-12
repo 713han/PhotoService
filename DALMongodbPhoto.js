@@ -5,7 +5,7 @@ var DALMongodbPhoto = (function(o){
 		mongodb,
 		mongoDbClient,
 		connectStr,
-		uuid;
+		uuid;	
 	
 	o.init = function(){
 		initOnce();
@@ -50,12 +50,14 @@ var DALMongodbPhoto = (function(o){
 		obj.filename = '';
 		obj.url = '';
 		obj.createDate = '';
+		obj.exif = {};
 		
-		obj.set = function(id, path, filename, url, callback){
+		obj.set = function(id, path, filename, url, exif, callback){
 			obj.strID = id;
 			obj.path = path;
 			obj.filename = filename;
 			obj.url = url;
+			obj.exif = exif;
 			
 			callback(obj);
 		}

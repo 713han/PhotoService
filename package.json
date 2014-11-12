@@ -13,7 +13,8 @@
     "socket.io": "1.1.0",
     "node-uuid": "~1.4.1",
     "mongodb": "~1.4.19",
-    "mysql": "~2.5.3"
+    "mysql": "~2.5.3",
+    "exif": "~0.4.0"
   },
   "devDependencies": {},
   "scripts": {

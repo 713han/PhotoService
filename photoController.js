@@ -8,6 +8,7 @@ var photoController = (function(o){
 		mmm = require('mmmagic'),
 		Magic = mmm.Magic,
 		uuid = require('node-uuid'),
+		exifImage = require('exif').ExifImage,
 		
 		config = require('./config'),		
 		hostname = config.hostname,
@@ -22,8 +23,8 @@ var photoController = (function(o){
 		cache = lruCache(config.lruOptions),
 		//otherCache = lruCache(50); // sets just the max size;
 		
-		//dalPhoto = require('./DALMongodbPhoto');
-		dalPhoto = require('./DALMysqlPhoto');
+		dalPhoto = require('./DALMongodbPhoto');
+		//dalPhoto = require('./DALMysqlPhoto');		
 		dalPhoto.init();
 	
 	fs.mkdirParent = function(dirPath, mode, callback) {	
@@ -84,7 +85,7 @@ var photoController = (function(o){
 		try{
 			var key = req.params.width + req.params.height + req.params.path;
 			var path = imgHome;
-			var imgPath = replacePath(path + req.params.path.replace(/\'/g,"/"));
+			var imgPath = path + 'photo/' + req.params.path.replace(/\'/g,"/");
 			var ext = getExtension(imgPath);
 			var obj;
 			
@@ -188,11 +189,19 @@ var photoController = (function(o){
 									fs.mkdirParent(imgHome + toPath ,'0755', function(){
 										fs.rename(fromPath + fileName, imgHome + toPath + fileName, error(res,function (result) {
 											var PhotoData = dalPhoto.PhotoData();
-											PhotoData.set(strID, toPath, fileName, hostname + toPath + fileName, function(insertObj){
-												dalPhoto.insertPhotoData(insertObj, function(statusObj){
-													objResponse(res, statusObj);
-												});
-											});	
+											var writeExifObj = {};
+											new exifImage({ image : imgHome + toPath + fileName }, function (error, exifData) {											    	
+												if (error){
+													writeExifObj = error;
+												}else{
+													writeExifObj = exifData;
+												}	
+												PhotoData.set(strID, toPath, fileName, hostname + toPath + fileName, writeExifObj, function(insertObj){
+													dalPhoto.insertPhotoData(insertObj, function(statusObj){
+														objResponse(res, statusObj);
+													});
+												});										            
+											});
 										}));
 									});
 								}else{					
@@ -248,10 +257,13 @@ var photoController = (function(o){
 		return (i < 0) ? '' : filename.substr(i).toLowerCase();
 	}
 
+	/*	
 	var replacePath = function (path){
-		var newPath = path.replace('/mallpdimg/v1/', '/pic/pImgUpload/');
+		var newPath = 'photo/' + path;
 		return newPath;
 	}
+	*/
+	
 
 	var log = function(msg){	
 		console.log('[' + new Date().toString() + '] ' + msg);
