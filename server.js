@@ -6,6 +6,8 @@ var http = require('http'),
 	express = require('express'),
 	favicon = require('serve-favicon'),	
 	busboy = require('connect-busboy'),
+	bodyParser = require('body-parser'),
+	url = require('url'),
 		
 	app = express(),	
 	server = http.createServer(app),
@@ -19,10 +21,14 @@ var http = require('http'),
 	uploadSize = config.uploadSize,
 	
 	//express config
-	cacheTime = config.cacheTime;
+	cacheTime = config.cacheTime,
+	
+	//object
+	utilObj = require('./UtilObject');
 	
 //Controller
 var picsController = require('./PhotoController');
+var profileController = require('./ProfileController');
 
 if (cluster.isMaster) {
 	var workers = {},
@@ -31,7 +37,7 @@ if (cluster.isMaster) {
 	monitor.listen(8081);
 		
 	process.title = 'PhotoService Master';
-	picsController.log(process.title + ' started');
+	utilObj.log(process.title + ' started');
 	
 	// 根據 CPU 個數來啟動相應數量的 worker
 	for (var i = 0; i < thQty; i++) {
@@ -44,7 +50,7 @@ if (cluster.isMaster) {
 
 	cluster.on('exit', function(worker) {
 		delete workers[worker.process.pid];
-		picsController.log('PhotoService #' + worker.process.pid + ' worker died');
+		utilObj.log('PhotoService #' + worker.process.pid + ' worker died');
 		io.sockets.emit('threadDied', worker.process.pid);
 		newThread();
 	});
@@ -75,7 +81,7 @@ if (cluster.isMaster) {
 		var worker = cluster.fork();
 		worker.on('message', msgHandler);
 		
-		var sysObj = new syInfoObj();
+		var sysObj = new utilObj.sysInfoObj();
 		sysObj.pid = worker.process.pid;
 		sysObj.workerID = worker.id;
 
@@ -104,7 +110,7 @@ if (cluster.isMaster) {
 	
 } else {
 	process.title = 'PhotoService@' + port + ' #' + process.pid;
-	picsController.log(process.title + ' worker started');
+	utilObj.log(process.title + ' worker started');
 
 	process.on('SIGHUP', function() {
 		// 接收到 SIGHUP 信號時，關閉 worker
@@ -121,131 +127,90 @@ app.use(busboy({
 		fileSize: uploadSize
 	}
 }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-app.get('/photo/', function (req, res) {
-	res.sendFile('monitor.html', { root: path.join(__dirname, './public') });
-});
 
-app.get('/photo/version', function (req, res) {		
-	res.send('Ver:' + config.version); 
-});
+app.route('/photo/')
+	.get(function (req, res) {
+		res.sendFile('monitor.html', { root: path.join(__dirname, './public') });
+	});
 
-app.get('/photo/ip', function (req, res) {	
-	var ip = req.headers['x-real-ip'] || req.connection.remoteAddress ;	
-	res.send(ip); 
-});
+app.route('/photo/version')
+	.get(function (req, res) {		
+		res.send('Ver:' + config.version); 
+	});
 
-app.get('/photo/:width/:height/:path', function(req, res, next){
-	picsController.getImg(req, res, next);
-});
+app.route('/photo/ip')
+	.get(function (req, res) {	
+		var ip = req.headers['x-real-ip'] || req.connection.remoteAddress ;	
+		res.send(ip); 
+	});
 
-app.post('/photo/fileupload', function(req, res){
-	picsController.imgUpload(req, res);
-});
+app.route('/photo/:width/:height/:path')
+	.get(function(req, res, next){
+		picsController.getImg(req, res, next);
+	});
 
-app.get('/photo/get/:strID', function(req, res){
-	picsController.getPhoto(req, res);
-});
+app.route('/photo/fileupload')
+	.post(function(req, res){
+		picsController.imgUpload(req, res);
+	});
 
-app.get('/photo/update/:strID', function(req, res){
-	picsController.updatePhoto(req, res);
-});
+app.route('/photo/get/:strID')
+	.get(function(req, res){
+		picsController.getPhoto(req, res);
+	});
 
-app.get('/photo/remove/:strID', function(req, res){
-	picsController.removePhoto(req, res);
-});
+app.route('/photo/update/:strID')
+	.get(function(req, res){
+		picsController.updatePhoto(req, res);
+	});
 
-app.get('/photo/photoList', function(req, res){
-	picsController.getPhotoList(req, res);
-});
+app.route('/photo/remove/:strID')
+	.get(function(req, res){
+		picsController.removePhoto(req, res);
+	});
 
-function syInfoObj(){
-	var obj = {};
+app.route('/photo/photoList')
+	.get(function(req, res){
+		picsController.getPhotoList(req, res);
+	});
+
+app.route('/photo/file')
+	.get(function (req, res) {
+		res.sendFile('file.html', { root: path.join(__dirname, './public') });
+	});
 	
-	obj.pid;
-	obj.workerID;
-	obj.numReqs = 0;
-	obj.cacheSize = 0;
+app.route('/photo/profile/register')
+	.get(function(req, res){
+		res.sendFile('register.html', { root: path.join(__dirname, './public') });
+	})
+	.post(function(req, res){
+		profileController.register(req, res);
+	});
 	
-	obj.addReqs = function (cacheSize){
-		obj.numReqs++;
-		obj.cacheSize = cacheSize;
-	}		
-	return obj;
-}
+app.route('/photo/profile/:id')
+	.get(function(req, res){
+		profileController.getProfile(req, res);		
+	});
 
-app.get('/photo/file/', function (req, res) {
-	res.sendFile('file.html', { root: path.join(__dirname, './public') });
-});
+
 
 	
 //--Debug--
 /* no use
-app.get('/photo/save/:strID', function(req, res){
-	picsController.savePhoto(req, res);
-});
-
-app.get('/mallimg/file/', function (req, res) {
-	res.sendFile('file.html', { root: path.join(__dirname, './public') });
-});
-app.get('/mallimg/doc/', function (req, res) {
-	res.sendFile('doc.html', { root: path.join(__dirname, './public') });
-});
-
-app.get('/mallimg/config', function (req, res) {	
-	res.send(config);
-});
-
-app.get('/mallimg/reset', function (req, res) {	
-	res.send('cmd has been sent');
-	process.send({cmd : 'reset', pid : process.pid});	
-});
-
-
-app.get('/mallimg/mkdir', function (req, res) {	
-	fs.mkdirParent(imgHome + req.query.path ,'0775', function(){
-		msgResponse(res,true,'mkdir success');
-	});		
-});
-
-app.get('/mallimg/Info/:path', function (req, res) {
-	var contentTypeArray = {
-			'.jpg': 'image/jpeg',
-			'.jpeg': 'image/jpeg',
-			'.gif': 'image/gif',
-			'.png': 'image/png',
-			'.bmp': 'image/bmp'
-		};
-		
-	var path = req.params.path.replace(/\'/g,"/");
-	var ext = getExtension(path);
-	console.log("path:" + req.params.path);
-	console.log("replace path:" + path);
-	console.log("ext:" + ext);
-	console.log("contentType:" + contentTypeArray[ext]);
-	res.send("success");
-});
-
-app.get('/mallimg/cacheInfo', function (req, res) {	
-	res.send(process.title + ":Cache Size:" + cache.keys().length);
-});
-
-app.get('/cache/:key/:value', function (req, res) {
-	console.log("key:" + req.params.key + " val:" + req.params.value);
-	cache.set(req.params.key,req.params.value);
-	res.send(cache.keys());
-	
-});
-
-app.get('/obj/:key', function (req, res) {
-	var key = req.params.key
-	var obj = cache.get(key);
-	if(typeof buff === 'undefined'){
-		obj = new imgObj();
-	}else{
-	
-	}
-});
+app.route('/photo/paramTest/:param?')
+	.get(function(req, res){
+		var query = url.parse(req.url, true).query;
+		console.log(query);
+		console.log(req.params);
+		res.sendFile('paramTest.html', { root: path.join(__dirname, './public') });
+	})
+	.post(function(req, res){
+		console.log(req.param);
+		res.send(req.body);
+	});
 */
 //--Debug
 

@@ -25,25 +25,7 @@ var DALMysqlProfile = (function(o){
 	
 	var bindEvent = function(){
 		
-	}
-	
-	o.statusObj = function(){
-		var obj = {};		
-		
-		obj.status = false;
-		obj.msg = '';
-		obj.Object = {};
-		
-		obj.set = function(status, msg, data, callback){
-			obj.status = status;
-			obj.msg = msg;
-			obj.Object = data;
-			
-			callback(obj);
-		}
-		
-		return obj;
-	}
+	}	
 	
 	o.ProfileData = function(){
 		var obj = {};		
@@ -51,13 +33,15 @@ var DALMysqlProfile = (function(o){
 		obj.name = '';
 		obj.email = '';
 		obj.password = '';
+		obj.ProfilePhoto = '';
 		obj.lastLoginDate = '';		
 		
 		obj.set = function(name, email, pwHash, callback){
-			obj.strID = id;
-			obj.path = path;
-			obj.filename = filename;
-			obj.url = url;
+			var t = new Date();
+			obj.name = name;
+			obj.email = email;
+			obj.password = pwHash;
+			obj.lastLoginDate = t.toISOString();
 			
 			callback(obj);
 		}
@@ -75,18 +59,17 @@ var DALMysqlProfile = (function(o){
 		    	status.set(false, 'Failed to inserted', insertObj, function(obj){
 					callback(obj);
 				});
-		        throw error;
+		        //throw error;
 		    }
 		    status.set(true, '', insertObj, function(obj){
 				callback(obj);
-			});
-		    console.log(res);
+			});		    
 		});
 		
 		//connection.end();
 	}
 	
-	o.remove = function(strID, callback){
+	o.remove = function(id, callback){
 		console.log("nothing");
 	}
 	
@@ -94,8 +77,25 @@ var DALMysqlProfile = (function(o){
 		console.log("nothing");			
 	}
 	
-	o.getData = function(strID, callback){
-		console.log("nothing");
+	o.getData = function(id, callback){		
+		var status = new utilObj.statusObj();
+		var sql = 'SELECT * FROM `' + tableName + '` WHERE id = ?';
+		
+		//connection.connect();
+		connection.query(sql, id, function(error, data, fields){
+		    if(error){ throw error; }
+		    if (data) {									
+				status.set(true, '', data, function(obj){
+					callback(obj);
+				});
+			} else {
+				status.set(false, 'Cannot found', data, function(obj){
+					callback(obj);
+				});
+			}
+		});		
+		
+		//connection.end();
 	}
 	
 	o.getList = function(callback){
