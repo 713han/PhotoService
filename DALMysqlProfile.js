@@ -7,8 +7,7 @@ var DALMysqlProfile = (function(o){
 		connection,
 		tableName,
 		uuid,
-		utilObj;
-		
+		utilObj;		
 	
 	o.init = function(){
 		initOnce();
