@@ -1,10 +1,13 @@
-var DALMysqlPhoto = (function(o){
+var DALMysqlProfile = (function(o){
 	"use strict";
 	
 	var
+		config,
 		mysql,
 		connection,
-		uuid;
+		tableName,
+		uuid,
+		utilObj;
 		
 	
 	o.init = function(){
@@ -13,14 +16,12 @@ var DALMysqlPhoto = (function(o){
 	}
 	
 	var initOnce = function(){		
+		config = require('./config');
 		mysql = require('mysql');
-		connection = mysql.createConnection({
-		    host: '127.0.0.1',
-		    user: 'hanshuang',
-		    password: 'yam317047',
-		    database: 'hanshuang'
-		});
+		connection = mysql.createConnection(config.MySqlConn);
+		tableName = 'Profile';
 		uuid = require('node-uuid');
+		utilObj = require('./UtilObject');
 	}
 	
 	var bindEvent = function(){
@@ -45,17 +46,15 @@ var DALMysqlPhoto = (function(o){
 		return obj;
 	}
 	
-	o.PhotoData = function(){
-		var obj = {};
+	o.ProfileData = function(){
+		var obj = {};		
 		
-		//obj._id = 0;
-		obj.strID = '';
-		obj.path = '';
-		obj.filename = '';
-		obj.url = '';
-		//obj.createDate = '';
+		obj.name = '';
+		obj.email = '';
+		obj.password = '';
+		obj.lastLoginDate = '';		
 		
-		obj.set = function(id, path, filename, url, callback){
+		obj.set = function(name, email, pwHash, callback){
 			obj.strID = id;
 			obj.path = path;
 			obj.filename = filename;
@@ -67,11 +66,12 @@ var DALMysqlPhoto = (function(o){
 		return obj;
 	}
 	
-	o.insertPhotoData = function(insertObj, callback){
-		var status = new o.statusObj();		
+	o.insert = function(insertObj, callback){
+		var status = new utilObj.statusObj();
+		var sql = 'INSERT INTO `' + tableName + '` SET ?';
 		//connection.connect();
 		
-		connection.query('INSERT INTO `PhotoData` SET ?', insertObj, function(error, res){
+		connection.query(sql, insertObj, function(error, res){
 		    if(error){
 		    	status.set(false, 'Failed to inserted', insertObj, function(obj){
 					callback(obj);
@@ -87,29 +87,24 @@ var DALMysqlPhoto = (function(o){
 		//connection.end();
 	}
 	
-	o.removePhotoData = function(strID, callback){
+	o.remove = function(strID, callback){
 		console.log("nothing");
 	}
 	
-
-	o.savePhotoData = function(strID, callback){
-		console.log("nothing");
-	}
-	
-	o.updatePhotoData = function(strID, callback){
+	o.update = function(strID, callback){
 		console.log("nothing");			
 	}
 	
-	o.getPhotoData = function(strID, callback){
+	o.getData = function(strID, callback){
 		console.log("nothing");
 	}
 	
-	o.getPhotoDataList = function(callback){
+	o.getList = function(callback){
 		console.log("nothing");
 	}
 	
 	return o;
 	
-})( DALMysqlPhoto || {} );
+})( DALMysqlProfile || {} );
 
-module.exports = DALMysqlPhoto;
+module.exports = DALMysqlProfile;

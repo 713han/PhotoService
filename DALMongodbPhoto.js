@@ -2,10 +2,12 @@ var DALMongodbPhoto = (function(o){
 	"use strict";
 	
 	var
+		config,
 		mongodb,
 		mongoDbClient,
 		connectStr,
-		uuid;	
+		uuid,
+		utilObj;	
 	
 	o.init = function(){
 		initOnce();
@@ -13,32 +15,16 @@ var DALMongodbPhoto = (function(o){
 	}
 	
 	var initOnce = function(){
+		config = require('./config');
 		mongodb = require('mongodb');
 		mongoDbClient = mongodb.MongoClient;
-		connectStr = 'mongodb://127.0.0.1:27017/PhotoService';
+		connectStr = config.MongoDBConn;
 		uuid = require('node-uuid');
+		utilObj = require('./UtilObject');
 	}
 	
 	var bindEvent = function(){
 		
-	}
-	
-	o.statusObj = function(){
-		var obj = {};		
-		
-		obj.status = false;
-		obj.msg = '';
-		obj.Object = {};
-		
-		obj.set = function(status, msg, data, callback){
-			obj.status = status;
-			obj.msg = msg;
-			obj.Object = data;
-			
-			callback(obj);
-		}
-		
-		return obj;
 	}
 	
 	o.PhotoData = function(){
@@ -66,7 +52,7 @@ var DALMongodbPhoto = (function(o){
 	}
 	
 	o.insertPhotoData = function(insertObj, callback){
-		var status = new o.statusObj();
+		var status = new utilObj.statusObj();
 		
 		var uuidBinary = new Buffer(uuid.parse(insertObj.strID));
 		var id = mongodb.BSONPure.Binary(uuidBinary, mongodb.BSONPure.Binary.SUBTYPE_UUID);
@@ -99,7 +85,7 @@ var DALMongodbPhoto = (function(o){
 	}
 	
 	o.removePhotoData = function(strID, callback){
-		var status = new o.statusObj();
+		var status = new utilObj.statusObj();
 		
 		var uuidBinary = new Buffer(uuid.parse(strID));
 		var id = mongodb.BSONPure.Binary(uuidBinary, mongodb.BSONPure.Binary.SUBTYPE_UUID);
@@ -127,7 +113,7 @@ var DALMongodbPhoto = (function(o){
 	//SAVE:_id一樣等同update的修改文件，沒有ID則新增
 	//參考:http://mongodb.github.io/node-mongodb-native/markdown-docs/insert.html
 	o.savePhotoData = function(strID, callback){
-		var status = new o.statusObj();
+		var status = new utilObj.statusObj();
 		
 		var uuidBinary = new Buffer(uuid.parse(strID));
 		var id = mongodb.BSONPure.Binary(uuidBinary, mongodb.BSONPure.Binary.SUBTYPE_UUID);
@@ -157,7 +143,7 @@ var DALMongodbPhoto = (function(o){
 	}
 	
 	o.updatePhotoData = function(strID, callback){
-		var status = new o.statusObj();
+		var status = new utilObj.statusObj();
 		
 		var uuidBinary = new Buffer(uuid.parse(strID));
 		var id = mongodb.BSONPure.Binary(uuidBinary, mongodb.BSONPure.Binary.SUBTYPE_UUID);
@@ -187,7 +173,7 @@ var DALMongodbPhoto = (function(o){
 	}
 	
 	o.getPhotoData = function(strID, callback){
-		var status = new o.statusObj();
+		var status = new utilObj.statusObj();
 		
 		var uuidBinary = new Buffer(uuid.parse(strID));		
 		var id = mongodb.BSONPure.Binary(uuidBinary, mongodb.BSONPure.Binary.SUBTYPE_UUID);		
@@ -212,7 +198,7 @@ var DALMongodbPhoto = (function(o){
 	}
 	
 	o.getPhotoDataList = function(callback){
-		var status = new o.statusObj();
+		var status = new utilObj.statusObj();
 		mongoDbClient.connect(connectStr, function(err, db) {
 			if(err) throw err;
 			db.collection('PhotoData', function(err, collection) {			

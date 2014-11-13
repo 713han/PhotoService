@@ -1,4 +1,4 @@
-var photoController = (function(o){
+var PhotoController = (function(o){
 	"use strict";
 	
 	var
@@ -23,8 +23,7 @@ var photoController = (function(o){
 		cache = lruCache(config.lruOptions),
 		//otherCache = lruCache(50); // sets just the max size;
 		
-		dalPhoto = require('./DALMongodbPhoto');
-		//dalPhoto = require('./DALMysqlPhoto');		
+		dalPhoto = require('./DALMongodbPhoto');				
 		dalPhoto.init();
 	
 	fs.mkdirParent = function(dirPath, mode, callback) {	
@@ -318,6 +317,6 @@ var photoController = (function(o){
 	}
 
 	return o;
-})( photoController || {} );
+})( PhotoController || {} );
 
-module.exports = photoController;
+module.exports = PhotoController;

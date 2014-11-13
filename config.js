@@ -23,4 +23,13 @@ config.ipLimit = {
 				 
 config.uploadSize = 5 * 1024 * 1024; //byte * K * M = MB 
 
+config.MySqlConn = {
+	host: '127.0.0.1',
+	user: 'hanshuang',
+	password: '0000',
+	database: 'hanshuang'
+};
+
+config.MongoDBConn = 'mongodb://127.0.0.1:27017/PhotoService';
+
 module.exports = config;

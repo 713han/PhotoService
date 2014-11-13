@@ -22,7 +22,7 @@ var http = require('http'),
 	cacheTime = config.cacheTime;
 	
 //Controller
-var picsController = require('./photoController');
+var picsController = require('./PhotoController');
 
 if (cluster.isMaster) {
 	var workers = {},
