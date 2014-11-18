@@ -1,50 +1,16 @@
-var ProfileController = (function(o){
-	"use strict";
+var ProfileFactory = require('./ProfileFactory');
+var profileObj = new ProfileFactory();
+
+var ProfileController = function(){
 	
-	var
-		config = require('./config'),
-		utilObj = require('./UtilObject'),
-		dalProfile = require('./DALMysqlProfile');			
+}
+
+ProfileController.prototype.register = function(req, res){
+	profileObj.register(req, res);
+}
 	
-	dalProfile.init();		
-	
-	o.init = function(){
-		initOnce();
-		bindEvent();		
-	}
-	
-	var initOnce = function(){		
-			
-	}
-	
-	var bindEvent = function(){
-		
-	}	
-	
-	o.register = function(req, res){
-		var 
-			name = req.body.name,
-			email = req.body.email,
-			pwHash = req.body.pwdHash;
-			
-		var userData = new dalProfile.ProfileData();
-		
-		userData.set(name, email, pwHash, function(userData){
-			dalProfile.insert(userData, function(statusObj){
-				utilObj.objResponse(res, statusObj);
-			});
-		});
-	}
-	
-	o.getProfile = function(req, res){		
-		var key = req.params.id;
-		dalProfile.getData(key, function(statusObj){
-			utilObj.objResponse(res, statusObj);
-		});	
-	}
-	
-	return o;
-	
-})( ProfileController || {} );
+ProfileController.prototype.getProfile = function(req, res){	
+	profileObj.getProfile(req, res);
+}
 
 module.exports = ProfileController;

@@ -24,11 +24,17 @@ var http = require('http'),
 	cacheTime = config.cacheTime,
 	
 	//object
-	utilObj = require('./UtilObject');
+	UtilObject = require('./UtilObject'),
+	utilObj = new UtilObject(),
+	SysInfo = require('./Models/SysInfo');
+	
 	
 //Controller
-var picsController = require('./PhotoController');
+var PhotoController = require('./PhotoController');
+var photo = new PhotoController();
+
 var profileController = require('./ProfileController');
+var profile = new profileController();
 
 if (cluster.isMaster) {
 	var workers = {},
@@ -81,7 +87,7 @@ if (cluster.isMaster) {
 		var worker = cluster.fork();
 		worker.on('message', msgHandler);
 		
-		var sysObj = new utilObj.sysInfoObj();
+		sysObj = new SysInfo();
 		sysObj.pid = worker.process.pid;
 		sysObj.workerID = worker.id;
 
@@ -120,6 +126,8 @@ if (cluster.isMaster) {
 	server.listen(port);
 }
 
+
+
 app.use(favicon(__dirname + '/public/2010favicon.ico'));
 app.use(express.static(imgHome, { maxAge: cacheTime }));
 app.use(busboy({	
@@ -130,6 +138,19 @@ app.use(busboy({
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+app.param(function(name, fn) {
+	if (fn instanceof RegExp) {
+		return function(req, res, next, val) {
+			var captures;
+			if (captures = fn.exec(String(val))) {
+				req.params[name] = captures;
+				next();
+			} else {
+				next('route');
+			}
+		}
+	}
+});
 
 app.route('/photo/')
 	.get(function (req, res) {
@@ -147,35 +168,25 @@ app.route('/photo/ip')
 		res.send(ip); 
 	});
 
+app.param('width', /^\d+$/);
+app.param('height', /^\d+$/);
 app.route('/photo/:width/:height/:path')
-	.get(function(req, res, next){
-		picsController.getImg(req, res, next);
-	});
+	.get(photo.getImg);
 
 app.route('/photo/fileupload')
-	.post(function(req, res){
-		picsController.imgUpload(req, res);
-	});
+	.post(photo.imgUpload);
 
 app.route('/photo/get/:strID')
-	.get(function(req, res){
-		picsController.getPhoto(req, res);
-	});
+	.get(photo.getPhoto);
 
 app.route('/photo/update/:strID')
-	.get(function(req, res){
-		picsController.updatePhoto(req, res);
-	});
+	.get(photo.updatePhoto);
 
 app.route('/photo/remove/:strID')
-	.get(function(req, res){
-		picsController.removePhoto(req, res);
-	});
+	.get(photo.removePhoto);
 
 app.route('/photo/photoList')
-	.get(function(req, res){
-		picsController.getPhotoList(req, res);
-	});
+	.get(photo.getPhotoList);
 
 app.route('/photo/file')
 	.get(function (req, res) {
@@ -186,15 +197,10 @@ app.route('/photo/profile/register')
 	.get(function(req, res){
 		res.sendFile('register.html', { root: path.join(__dirname, './public') });
 	})
-	.post(function(req, res){
-		profileController.register(req, res);
-	});
+	.post(profile.register);
 	
-app.route('/photo/profile/:id')
-	.get(function(req, res){
-		profileController.getProfile(req, res);		
-	});
-
+app.route('/photo/profile/get/:id')
+	.get(profile.getProfile);
 
 
 	
