@@ -202,6 +202,8 @@ app.route('/photo/profile/register')
 app.route('/photo/profile/get/:id')
 	.get(profile.getProfile);
 
+app.route('/photo/profile/list')
+	.get(profile.getProfileList);
 
 	
 //--Debug--

@@ -60,8 +60,9 @@ DALMysqlProfile.prototype.getData = function(id, result){
  * result:function(err, obj);
  */
 DALMysqlProfile.prototype.getList = function(result){
-	//TODO getList
-	console.log("nothing");
+	var sql = 'SELECT * FROM `' + this.tableName + '` ';
+	var defErrMsg = 'Cannot found';
+	executeSQL(sql, null, defErrMsg, result);	
 }
 
 module.exports = DALMysqlProfile;

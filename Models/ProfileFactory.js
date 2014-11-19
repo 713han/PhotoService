@@ -88,4 +88,41 @@ ProfileFactory.prototype.getProfile = function(key, result){
 	});
 }
 
+/*
+ * result:function(err, obj);
+ */
+ProfileFactory.prototype.getProfileList = function(result){	
+	
+	Async.waterfall([	   
+	function(callback) {
+		dalProfile.getList(function(err, data){
+			if(err){
+				callback(null, 'Get data Failed', false, err);
+			}else{
+				if(data.length > 0){	    			
+	    			callback(null, '', true, data);
+	    		}else{
+	    			callback(null, 'Data not found', false, data);
+	    		}
+			}
+		});
+	}, 
+	function(msg, isGetData, data, callback) {
+		var statusObj = new Status();
+		statusObj.set(isGetData, msg, data, callback);
+	},
+	function(statusObj, callback) {
+		result(null, statusObj);
+		callback(null, 'done');
+	}], function(err, resultObj) {
+		if (err) {
+			var obj = {
+					err : err,
+					result : resultObj
+			};
+			result(Obj, null);
+		}
+	});
+}
+
 module.exports = ProfileFactory;

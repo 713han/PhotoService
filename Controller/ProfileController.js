@@ -37,4 +37,14 @@ ProfileController.prototype.getProfile = function(req, res){
 	});
 }
 
+ProfileController.prototype.getProfileList = function(req, res){
+	profileObj.getProfileList(function(err, obj){
+		if(err){
+			utilObj.errResponse(res, err);
+		}else{
+			utilObj.objResponse(res, obj);
+		}
+	});
+}
+
 module.exports = ProfileController;
