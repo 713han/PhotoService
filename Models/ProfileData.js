@@ -6,14 +6,17 @@ var ProfileData = function(){
 	this.lastLoginDate = '';	
 }
 
-ProfileData.prototype.set = function(name, email, pwHash, callback){
+/*
+ * result:function(err, obj);
+ */
+ProfileData.prototype.set = function(name, email, pwHash, result){
 	var t = new Date();
 	this.name = name;
 	this.email = email;
 	this.password = pwHash;
 	this.lastLoginDate = t.toISOString();
 	
-	callback(this);
+	result(null, this);
 }
 
 module.exports = ProfileData;

@@ -4,12 +4,15 @@ var Status = function(){
 	this.Object = {};
 }	
 
-Status.prototype.set = function(status, msg, data, callback){
+/*
+ * result:function(err, obj);
+ */
+Status.prototype.set = function(status, msg, data, result){
 	this.status = status;
 	this.msg = msg;
 	this.Object = data;
 	
-	callback(null, this);
+	result(null, this);
 }
 
 module.exports = Status;

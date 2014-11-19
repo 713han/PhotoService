@@ -9,14 +9,17 @@ var PhotoData = function(){
 	this.exif = {};
 }
 
-PhotoData.prototype.set = function(id, path, filename, url, exif, callback){
+/*
+ * result:function(err, obj);
+ */
+PhotoData.prototype.set = function(id, path, filename, url, exif, result){
 	this.strID = id;
 	this.path = path;
 	this.filename = filename;
 	this.url = url;
 	this.exif = exif;
 	
-	callback(this);
+	result(null, this);
 }
 
 module.exports = PhotoData;

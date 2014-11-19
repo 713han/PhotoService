@@ -1,42 +1,37 @@
-// 2014.10.31 1636 Trunk
-var http = require('http'),
-	fs = require('fs'),
-	path = require('path'),
-	cluster = require('cluster'),
-	express = require('express'),
-	favicon = require('serve-favicon'),	
-	busboy = require('connect-busboy'),
-	bodyParser = require('body-parser'),
-	url = require('url'),
-		
-	app = express(),	
-	server = http.createServer(app),
-	monitor = http.createServer(app),
+var Path = require('path');
+global.appRoot = Path.resolve(__dirname);
+
+var 
+	Http = require('http'),
+	Fs = require('fs'),
+	Cluster = require('cluster'),
+	Express = require('express'),
+	Favicon = require('serve-favicon'),	
+	Busboy = require('connect-busboy'),
+	BodyParser = require('body-parser'),
+	Url = require('url'),
+	Config = require(appRoot + '/config'),
+	UtilObject = require(appRoot + '/Models/UtilObject'),
+	SysInfo = require(appRoot + '/Models/SysInfo'),
 	
-	//server config
-	config = require('./config'),
-	port = config.port, 
-	thQty = config.thQty,
-	imgHome = config.imgHome,
-	uploadSize = config.uploadSize,
-	
-	//express config
-	cacheTime = config.cacheTime,
-	
-	//object
-	UtilObject = require('./UtilObject'),
+	PhotoController = require(appRoot + '/Controller/PhotoController'),
+	ProfileController = require(appRoot + '/Controller/ProfileController');
+
+var
+	app = Express(),	
+	server = Http.createServer(app),
+	monitor = Http.createServer(app),	
+	port = Config.port, 
+	thQty = Config.thQty,
+	imgHome = Config.imgHome,
+	uploadSize = Config.uploadSize,
+	cacheTime = Config.cacheTime,
 	utilObj = new UtilObject(),
-	SysInfo = require('./Models/SysInfo');
 	
-	
-//Controller
-var PhotoController = require('./PhotoController');
-var photo = new PhotoController();
+	photo = new PhotoController(),
+	profile = new ProfileController();
 
-var profileController = require('./ProfileController');
-var profile = new profileController();
-
-if (cluster.isMaster) {
+if (Cluster.isMaster) {
 	var workers = {},
 	io = require('socket.io').listen(monitor);
 
@@ -54,7 +49,7 @@ if (cluster.isMaster) {
 		// master 進程忽略 SIGHUP 信號
 	});
 
-	cluster.on('exit', function(worker) {
+	Cluster.on('exit', function(worker) {
 		delete workers[worker.process.pid];
 		utilObj.log('PhotoService #' + worker.process.pid + ' worker died');
 		io.sockets.emit('threadDied', worker.process.pid);
@@ -62,7 +57,13 @@ if (cluster.isMaster) {
 	});
 	
 	// 監測文件改動，如果有修改，就將所有的 worker kill 掉
-	fs.watch(__dirname, function(event, filename) {		
+	Fs.watch(__dirname, function(event, filename) {		
+		killAllThread();
+	});
+	Fs.watch(__dirname + '/Models', function(event, filename) {		
+		killAllThread();
+	});
+	Fs.watch(__dirname + '/Controller', function(event, filename) {		
 		killAllThread();
 	});
 	
@@ -84,10 +85,10 @@ if (cluster.isMaster) {
 	});
 	
 	function newThread(){
-		var worker = cluster.fork();
+		var worker = Cluster.fork();
 		worker.on('message', msgHandler);
 		
-		sysObj = new SysInfo();
+		var sysObj = new SysInfo();
 		sysObj.pid = worker.process.pid;
 		sysObj.workerID = worker.id;
 
@@ -97,7 +98,7 @@ if (cluster.isMaster) {
 	
 	function killAllThread(){
 		for(var pid in workers){
-			cluster.workers[workers[pid].workerID].kill();	
+			Cluster.workers[workers[pid].workerID].kill();	
 			delete workers[pid];					
 		}
 	}
@@ -127,16 +128,15 @@ if (cluster.isMaster) {
 }
 
 
-
-app.use(favicon(__dirname + '/public/2010favicon.ico'));
-app.use(express.static(imgHome, { maxAge: cacheTime }));
-app.use(busboy({	
+app.use(Favicon(__dirname + '/public/2010favicon.ico'));
+app.use(Express.static(imgHome, { maxAge: cacheTime }));
+app.use(Busboy({	
 	limits: {
 		fileSize: uploadSize
 	}
 }));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(BodyParser.urlencoded({ extended: true }));
+app.use(BodyParser.json());
 
 app.param(function(name, fn) {
 	if (fn instanceof RegExp) {
@@ -154,18 +154,23 @@ app.param(function(name, fn) {
 
 app.route('/photo/')
 	.get(function (req, res) {
-		res.sendFile('monitor.html', { root: path.join(__dirname, './public') });
+		res.sendFile('monitor.html', { root: Path.join(__dirname, './public') });
 	});
 
 app.route('/photo/version')
 	.get(function (req, res) {		
-		res.send('Ver:' + config.version); 
+		res.send('Ver:' + Config.version); 
 	});
 
 app.route('/photo/ip')
 	.get(function (req, res) {	
 		var ip = req.headers['x-real-ip'] || req.connection.remoteAddress ;	
 		res.send(ip); 
+	});
+
+app.route('/photo/file')
+	.get(function (req, res) {
+		res.sendFile('file.html', { root: Path.join(__dirname, './public') });
 	});
 
 app.param('width', /^\d+$/);
@@ -188,14 +193,9 @@ app.route('/photo/remove/:strID')
 app.route('/photo/photoList')
 	.get(photo.getPhotoList);
 
-app.route('/photo/file')
-	.get(function (req, res) {
-		res.sendFile('file.html', { root: path.join(__dirname, './public') });
-	});
-	
 app.route('/photo/profile/register')
 	.get(function(req, res){
-		res.sendFile('register.html', { root: path.join(__dirname, './public') });
+		res.sendFile('register.html', { root: Path.join(__dirname, './public') });
 	})
 	.post(profile.register);
 	

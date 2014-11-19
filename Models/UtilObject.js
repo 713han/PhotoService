@@ -1,4 +1,4 @@
-var config = require('./config');
+var config = require(appRoot + '/config');
 
 var log = function(msg){
 	console.log('[' + new Date().toString() + '] ' + msg);
@@ -33,7 +33,7 @@ UtilObject.prototype.objResponse = function(res, obj){
 	res.send(obj);
 }
 
-UtilObject.prototype.errResponse = function(res, errMsg){
+UtilObject.prototype.errResponse = function(res, err){
 	var errObj = {
 		errcode : 500,
 		errMsg : '500: Internal Server Error',
@@ -41,7 +41,7 @@ UtilObject.prototype.errResponse = function(res, errMsg){
 	};
 	
 	if(this.debug){
-		errObj.debug = errMsg;
+		errObj.debug = err;
 	}
 	
 	res.status(500);
