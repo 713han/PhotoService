@@ -1,3 +1,10 @@
+var
+ 	Moment = require('moment'),
+	UtilObject = require(appRoot + '/Models/UtilObject');
+
+var
+	utilObj = new UtilObject();	
+	
 var ProfileData = function(){
 	this.name = '';
 	this.email = '';
@@ -9,12 +16,12 @@ var ProfileData = function(){
 /*
  * result:function(err, obj);
  */
-ProfileData.prototype.set = function(name, email, pwHash, result){
-	var t = new Date();
+ProfileData.prototype.set = function(name, email, pw, result){
+	
 	this.name = name;
 	this.email = email;
-	this.password = pwHash;
-	this.lastLoginDate = t.toISOString();
+	this.password = utilObj.getSHA256Hash(pw);
+	this.lastLoginDate = Moment().format('YYYY-MM-DD HH:mm:ss');
 	
 	result(null, this);
 }

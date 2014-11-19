@@ -1,12 +1,19 @@
-var config = require(appRoot + '/config');
+var 
+	Config = require(appRoot + '/config'),
+	Crypto = require('crypto');
 
 var log = function(msg){
 	console.log('[' + new Date().toString() + '] ' + msg);
 }
 
 var UtilObject = function(){
-	this.cacheTime = config.cacheTime;
-	this.debug = config.debug;
+	this.cacheTime = Config.cacheTime;
+	this.debug = Config.debug;
+}
+
+UtilObject.prototype.getSHA256Hash = function(string){
+	var hash = Crypto.createHash('sha256').update(string).digest('base64');
+	return hash;
 }
 
 UtilObject.prototype.log = function(msg){
