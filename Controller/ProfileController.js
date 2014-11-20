@@ -24,6 +24,20 @@ ProfileController.prototype.register = function(req, res){
 		}
 	});
 }
+
+ProfileController.prototype.verify = function(req, res){
+	var 
+		email = req.body.email,
+		pw = req.body.pw;
+	
+	profileObj.verify(email, pw, function(err, obj){
+		if(err){
+			utilObj.errResponse(res, err);
+		}else{
+			utilObj.objResponse(res, obj);
+		}
+	});
+}
 	
 ProfileController.prototype.getProfile = function(req, res){
 	var key = req.params.id;
@@ -39,6 +53,18 @@ ProfileController.prototype.getProfile = function(req, res){
 
 ProfileController.prototype.getProfileList = function(req, res){
 	profileObj.getProfileList(function(err, obj){
+		if(err){
+			utilObj.errResponse(res, err);
+		}else{
+			utilObj.objResponse(res, obj);
+		}
+	});
+}
+
+ProfileController.prototype.removeProfile = function(req, res){
+	var key = req.params.id;
+	
+	profileObj.remove(key, function(err, obj){
 		if(err){
 			utilObj.errResponse(res, err);
 		}else{

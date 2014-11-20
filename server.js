@@ -198,9 +198,15 @@ app.route('/photo/profile/register')
 		res.sendFile('register.html', { root: Path.join(__dirname, './public') });
 	})
 	.post(profile.register);
+
+app.route('/photo/profile/verify')
+	.post(profile.verify);
 	
 app.route('/photo/profile/get/:id')
 	.get(profile.getProfile);
+
+app.route('/photo/profile/remove/:id')
+.get(profile.removeProfile);
 
 app.route('/photo/profile/list')
 	.get(profile.getProfileList);

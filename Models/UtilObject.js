@@ -1,6 +1,7 @@
 var 
-	Config = require(appRoot + '/config'),
-	Crypto = require('crypto');
+	Moment = require('moment'),
+	Crypto = require('crypto'),
+	Config = require(appRoot + '/config');
 
 var log = function(msg){
 	console.log('[' + new Date().toString() + '] ' + msg);
@@ -9,6 +10,10 @@ var log = function(msg){
 var UtilObject = function(){
 	this.cacheTime = Config.cacheTime;
 	this.debug = Config.debug;
+}
+
+UtilObject.prototype.getNowDateString = function(){
+	return Moment().format('YYYY-MM-DD HH:mm:ss');
 }
 
 UtilObject.prototype.getSHA256Hash = function(string){

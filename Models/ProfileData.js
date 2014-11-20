@@ -1,5 +1,4 @@
 var
- 	Moment = require('moment'),
 	UtilObject = require(appRoot + '/Models/UtilObject');
 
 var
@@ -21,7 +20,7 @@ ProfileData.prototype.set = function(name, email, pw, result){
 	this.name = name;
 	this.email = email;
 	this.password = utilObj.getSHA256Hash(pw);
-	this.lastLoginDate = Moment().format('YYYY-MM-DD HH:mm:ss');
+	this.lastLoginDate = utilObj.getNowDateString();
 	
 	result(null, this);
 }
