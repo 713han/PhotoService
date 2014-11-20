@@ -2,9 +2,9 @@ var
 	Async = require('async'),
 	Config = require(appRoot + '/config'),	
 	UtilObject = require(appRoot + '/Models/UtilObject'),
-	Status = require(appRoot + '/Models/Status'),
-	DALMysqlProfile = require(appRoot + '/Models/DALMysqlProfile'),
-	ProfileData = require(appRoot + '/Models/ProfileData');
+	Status = require(appRoot + '/Models/DataObject/Status'),	
+	ProfileData = require(appRoot + '/Models/DataObject/ProfileData'),
+	DALMysqlProfile = require(appRoot + '/Models/DAL/DALMysqlProfile');
 
 var
 	utilObj = new UtilObject(),
@@ -164,11 +164,11 @@ ProfileFactory.prototype.getProfile = function(key, result){
 /*
  * result:function(err, obj);
  */
-ProfileFactory.prototype.getProfileList = function(result){	
+ProfileFactory.prototype.getProfileList = function(page, itemPerPage, result){	
 	
 	Async.waterfall([	   
 	function(callback) {
-		dalProfile.getList(function(err, data){
+		dalProfile.getList(page, itemPerPage, function(err, data){
 			if(err){
 				callback(null, 'Get data Failed', false, err);
 			}else{

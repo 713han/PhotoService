@@ -2,7 +2,7 @@ var config = {}
 
 config.hostname = 'http://192.168.56.103/';
 config.port = 8080;
-config.version = '0.2.0';
+config.version = '0.2.3';
 //config.thQty = require('os').cpus().length;
 config.thQty = 1;
 config.isUseCache = true;

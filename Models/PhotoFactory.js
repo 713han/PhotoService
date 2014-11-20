@@ -8,10 +8,10 @@ var
 	Magic = MMMagic.Magic,	
 	ExifImage = require('exif').ExifImage,	
 	Config = require(appRoot + '/config'),
-	PhotoData = require(appRoot + '/Models/PhotoData'),
-	Status = require(appRoot + '/Models/Status'),
-	ImgCache = require(appRoot + '/Models/ImgCache'),
-	DALMongodbPhoto = require(appRoot + '/Models/DALMongodbPhoto');	
+	PhotoData = require(appRoot + '/Models/DataObject/PhotoData'),
+	Status = require(appRoot + '/Models/DataObject/Status'),
+	ImgCache = require(appRoot + '/Models/DataObject/ImgCache'),
+	DALMongodbPhoto = require(appRoot + '/Models/DAL/DALMongodbPhoto');	
 
 var	
 	cache = LruCache(Config.lruOptions),

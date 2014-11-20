@@ -12,7 +12,7 @@ var
 	Url = require('url'),
 	Config = require(appRoot + '/config'),
 	UtilObject = require(appRoot + '/Models/UtilObject'),
-	SysInfo = require(appRoot + '/Models/SysInfo'),
+	SysInfo = require(appRoot + '/Models/DataObject/SysInfo'),
 	
 	PhotoController = require(appRoot + '/Controller/PhotoController'),
 	ProfileController = require(appRoot + '/Controller/ProfileController');
@@ -206,9 +206,11 @@ app.route('/photo/profile/get/:id')
 	.get(profile.getProfile);
 
 app.route('/photo/profile/remove/:id')
-.get(profile.removeProfile);
+	.get(profile.removeProfile);
 
-app.route('/photo/profile/list')
+app.param('page', /^\d+$/);
+app.param('itemPerPage', /^\d+$/);
+app.route('/photo/profile/list/:page/:itemPerPage')
 	.get(profile.getProfileList);
 
 	

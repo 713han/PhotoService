@@ -52,7 +52,10 @@ ProfileController.prototype.getProfile = function(req, res){
 }
 
 ProfileController.prototype.getProfileList = function(req, res){
-	profileObj.getProfileList(function(err, obj){
+	var page = req.params.page;
+	var itemPerPage = req.params.itemPerPage;
+	
+	profileObj.getProfileList(page, itemPerPage, function(err, obj){
 		if(err){
 			utilObj.errResponse(res, err);
 		}else{
