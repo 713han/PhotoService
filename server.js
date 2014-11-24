@@ -15,7 +15,8 @@ var
 	SysInfo = require(appRoot + '/Models/DataObject/SysInfo'),
 	
 	PhotoController = require(appRoot + '/Controller/PhotoController'),
-	ProfileController = require(appRoot + '/Controller/ProfileController');
+	ProfileController = require(appRoot + '/Controller/ProfileController'),
+	GPSController = require(appRoot + '/Controller/GPSController');
 
 var
 	app = Express(),	
@@ -29,7 +30,8 @@ var
 	utilObj = new UtilObject(),
 	
 	photo = new PhotoController(),
-	profile = new ProfileController();
+	profile = new ProfileController(),
+	gps = new GPSController();
 
 if (Cluster.isMaster) {
 	var workers = {},
@@ -63,6 +65,12 @@ if (Cluster.isMaster) {
 	Fs.watch(__dirname + '/Models', function(event, filename) {		
 		killAllThread();
 	});
+	Fs.watch(__dirname + '/Models/DAL', function(event, filename) {		
+		killAllThread();
+	});
+	Fs.watch(__dirname + '/Models/DataObject', function(event, filename) {		
+		killAllThread();
+	});
 	Fs.watch(__dirname + '/Controller', function(event, filename) {		
 		killAllThread();
 	});
@@ -71,7 +79,8 @@ if (Cluster.isMaster) {
 		var intervalID;
 		socket.on('start', function() {
 			intervalID = setInterval(function() {
-				socket.emit('updateStatus', workers);
+				//socket.emit('updateStatus', workers);
+				socket.emit('updateStatus', "hello");
 			}, 1000);
 		});	
 		
@@ -212,6 +221,16 @@ app.param('page', /^\d+$/);
 app.param('itemPerPage', /^\d+$/);
 app.route('/photo/profile/list/:page/:itemPerPage')
 	.get(profile.getProfileList);
+
+app.route('/photo/gps/list')
+	.get(gps.getGPSList);
+
+app.param('id', /^\w{24}$/);
+app.route('/photo/gps/get/:id')
+	.get(gps.getGPSData);
+
+app.route('/photo/gps/upload')
+	.post(gps.gpsLogUpload);
 
 	
 //--Debug--

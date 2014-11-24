@@ -2,7 +2,7 @@ var config = {}
 
 config.hostname = 'http://192.168.56.103/';
 config.port = 8080;
-config.version = '0.2.3';
+config.version = '0.2.4';
 //config.thQty = require('os').cpus().length;
 config.thQty = 1;
 config.isUseCache = true;
@@ -19,7 +19,8 @@ config.imgHome = '/home/OriginPhoto/'; //CentOS testing production
 
 config.ipLimit = {
 	'10.2.10.15' : true,
-	'192.168.56.2' : true
+	'192.168.56.2' : true,
+	'10.2.3.62' : true
 };
 				 
 config.uploadSize = 5 * 1024 * 1024; //byte * K * M = MB 

@@ -1,6 +1,6 @@
 {
   "name": "PhotoService",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "photo service",
   "main": "server.js",
   "dependencies": {
@@ -10,7 +10,7 @@
     "lru-cache": "2.5.0",
     "mmmagic": "0.3.8",
     "serve-favicon": "2.1.4",
-    "socket.io": "1.1.0",
+    "socket.io": "~0.9.16",
     "node-uuid": "~1.4.1",
     "mongodb": "~1.4.19",
     "mysql": "~2.5.3",

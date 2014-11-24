@@ -203,7 +203,7 @@ PhotoFactory.prototype.getImg = function (width, height, strPath, result) {
 		var key = width + height + strPath;		
 		var ext = getExtension(path);
 		var obj;		
-		
+
 		var useCache = function(){
 			var show = false;
 			if(!show){		
