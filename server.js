@@ -36,6 +36,7 @@ var
 if (Cluster.isMaster) {
 	var workers = {},
 	io = require('socket.io').listen(monitor);
+	io.set("log level",0);
 
 	monitor.listen(8081);
 		
@@ -75,20 +76,22 @@ if (Cluster.isMaster) {
 		killAllThread();
 	});
 	
-	io.sockets.on('connection', function(socket) {
+	io.sockets.on('connection', function(socket) {		
 		var intervalID;
-		socket.on('start', function() {
+		socket.on('start', function() {	
+			console.log('start');
 			intervalID = setInterval(function() {
-				//socket.emit('updateStatus', workers);
-				socket.emit('updateStatus', "hello");
+				socket.emit('updateStatus', workers);
 			}, 1000);
 		});	
 		
 		socket.on('stop', function() { 
+			console.log('stop');
 			clearInterval(intervalID);
 		});
 		
 		socket.on('disconnect', function() { 
+			console.log('disconnect');
 			clearInterval(intervalID);
 		});
 	});
