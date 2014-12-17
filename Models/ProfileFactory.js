@@ -26,7 +26,7 @@ ProfileFactory.prototype.register = function(name, email, pw, result){
 	function(userData, callback) {
 		dalProfile.getDataByMail(userData.email, function(err, obj){
 			if(err){
-				callback(null, 'Check User Failed', false, err);
+				callback(null, 'Check User Failed', false, err); //TODO Issue
 			}else{				
 				if(obj.length > 0){					
 					callback(null, 'User already exists');
